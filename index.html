@@ -59,13 +59,15 @@
     }
 
     /* Fake image, just for this example */
-    .fakeimg {
+    .artist-image {
       background-color: #1abc9c;
       background-image: url("https://groupietrackers.herokuapp.com/api/images/queen.jpeg");
       background-position: center;
       width: 100%;
       padding: 20px;
       cursor: pointer;
+      height:200px; 
+      width:150px;
     }
 
     .artist-card-container {
@@ -130,74 +132,10 @@
   <div class="row">
     <div class="main">
       <h2>Artists</h2>
-      <div class="artist-card-container">
-        <div class="artist-card">
-          <div class="fakeimg" style="height:200px; width:150px;">Image</div>
-          <div class="artist-info">
-            <span class="artist-title">Queen</span>
-            <br>
-            <span class="artist-year">1970</span>
-          </div>
-        </div>
-        <div class="artist-card">
-          <div class="fakeimg" style="height:200px; width:150px;">Image</div>
-          <div class="artist-info">
-            <span class="artist-title">Queen</span>
-            <br>
-            <span class="artist-year">1970</span>
-          </div>
-        </div>
-        <div class="artist-card">
-          <div class="fakeimg" style="height:200px; width:150px;">Image</div>
-          <div class="artist-info">
-            <span class="artist-title">Queen</span>
-            <br>
-            <span class="artist-year">1970</span>
-          </div>
-        </div>
-        <div class="artist-card">
-          <div class="fakeimg" style="height:200px; width:150px;">Image</div>
-          <div class="artist-info">
-            <span class="artist-title">Queen</span>
-            <br>
-            <span class="artist-year">1970</span>
-          </div>
-        </div>
-        <div class="artist-card">
-          <div class="fakeimg" style="height:200px; width:150px;">Image</div>
-          <div class="artist-info">
-            <span class="artist-title">Queen</span>
-            <br>
-            <span class="artist-year">1970</span>
-          </div>
-        </div>
-        <div class="artist-card">
-          <div class="fakeimg" style="height:200px; width:150px;">Image</div>
-          <div class="artist-info">
-            <span class="artist-title">Queen</span>
-            <br>
-            <span class="artist-year">1970</span>
-          </div>
-        </div>
-        <div class="artist-card">
-          <div class="fakeimg" style="height:200px; width:150px;">Image</div>
-          <div class="artist-info">
-            <span class="artist-title">Queen</span>
-            <br>
-            <span class="artist-year">1970</span>
-          </div>
-        </div>
-        <div class="artist-card">
-          <div class="fakeimg" style="height:200px; width:150px;">Image</div>
-          <div class="artist-info">
-            <span class="artist-title">Queen</span>
-            <br>
-            <span class="artist-year">1970</span>
-          </div>
-        </div>
+      <div class="artist-card-container" id="artist-container">
+       
 
       </div>
-
     </div>
   </div>
 
@@ -208,4 +146,46 @@
 
 </body>
 
+<script>
+ 
+  var xhttp = new XMLHttpRequest(); 
+  xhttp.onreadystatechange = function() {
+    
+  if (this.readyState == 4 && this.status == 200) {
+    var container = document.getElementById("artist-container");
+    var obj = JSON.parse(this.responseText); 
+    obj.forEach(artist => {
+      var div = document.createElement("div")
+      div.className = "artist-card"
+      
+      var image = document.createElement("div")
+      image.className = "artist-image"
+      image.style = "background-image: url("+ artist.Image + ");"
+      div.appendChild(image)
+
+      var artistInfo = document.createElement("div")
+      artistInfo.className = "artist-info"
+      
+      var artistTitle = document.createElement("span")
+      artistTitle.className = "artist-title"
+      artistTitle.innerText = artist.Name
+      
+      var br = document.createElement("br")
+
+      var artistYear = document.createElement("span")
+      artistYear.className = "artist-year"
+      artistYear.innerText = artist.CreationDate
+
+      artistInfo.appendChild(artistTitle)
+      artistInfo.appendChild(br)
+      artistInfo.appendChild(artistYear)
+      div.appendChild(artistInfo)
+      container.appendChild(div)
+    });
+  }
+};
+xhttp.open("GET", "/artists", true);
+xhttp.send();
+
+</script>
 </html>
