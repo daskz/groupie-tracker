@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"text/template"
 )
 
@@ -19,20 +20,23 @@ type Artist struct {
 func main() {
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/artists", artistsHandler)
+
+	fs := http.FileServer(http.Dir("css"))
+	http.Handle("/css/", http.StripPrefix("/css/", fs))
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	t, _ := template.ParseFiles("index.html")
-	page := struct {
-		Title string
-		Body  string
-	}{
-		Title: "this is Title",
-		Body:  "this is Body",
-	}
+	id := strings.TrimPrefix(r.URL.Path, "/")
 
-	t.Execute(w, page)
+	var fileName = "index.html"
+	if id != "" {
+		fileName = "artist.html"
+	}
+	t, _ := template.ParseFiles(fileName)
+
+	t.Execute(w, nil)
 }
 
 func artistsHandler(w http.ResponseWriter, r *http.Request) {
