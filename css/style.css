@@ -4,7 +4,7 @@
 
   /* Style the body */
   body {
-    font-family: Arial;
+    font-family: Roboto;
     margin: 0;
     color: white
   }
@@ -61,13 +61,13 @@
     width:200px;
   }
 
-  .artist-card-container {
+  .flex-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
   }
 
-  .artist-card-container a {
+  .flex-container a {
     text-decoration: none;
     color: inherit
   }
@@ -97,6 +97,26 @@
     padding: 20px;
     text-align: center;
     background: white;
+  }
+
+  .artist-page-style {
+    line-height: 1.7em;
+  }
+
+  .artist-page-card {
+    margin: 10px 10px;
+  }
+
+  .artist-page-info {
+    font-weight: bold
+  }
+
+  .artist-page-info-data {
+    opacity: 80%;
+  }
+
+  .artist-page-list {
+   margin-top: auto; 
   }
 
   /* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */

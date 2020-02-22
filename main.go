@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"text/template"
 )
@@ -15,11 +16,12 @@ type Artist struct {
 	CreationDate int
 	FirstAlbum   string
 	Image        string
+	Members      []string
 }
 
 func main() {
 	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/artists", artistsHandler)
+	http.HandleFunc("/api/artists/", artistsHandler)
 
 	fs := http.FileServer(http.Dir("css"))
 	http.Handle("/css/", http.StripPrefix("/css/", fs))
@@ -41,7 +43,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func artistsHandler(w http.ResponseWriter, r *http.Request) {
 	var artists []Artist
-
+	log.Println("/api/artists requested")
 	res, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
 	if err != nil {
 		log.Fatal(err)
@@ -59,5 +61,23 @@ func artistsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err.Error())
 		}
 	}
+
+	idUrl := strings.TrimPrefix(r.URL.Path, "/api/artists/")
+	id, err := strconv.Atoi(idUrl)
+	log.Println(idUrl)
+	if idUrl != "" && err == nil {
+		// log.Fatal(err.Error())
+		json.NewEncoder(w).Encode(filterArtistByID(artists, id))
+		return
+	}
 	json.NewEncoder(w).Encode(artists)
+}
+
+func filterArtistByID(artists []Artist, id int) *Artist {
+	for _, item := range artists {
+		if item.ID == id {
+			return &item
+		}
+	}
+	return nil
 }

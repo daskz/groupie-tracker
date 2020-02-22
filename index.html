@@ -6,6 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet"> 
 </head>
 
 <body>
@@ -15,19 +16,12 @@
     <h1>Groupie Tracker</h1>
   </div>
 
-  <!-- Navigation Bar -->
-  <div class="navbar">
-    <a href="#">Link</a>
-    <a href="#">Link</a>
-    <a href="#">Link</a>
-    <a href="#">Link</a>
-  </div>
-
   <!-- The flexible grid (content) -->
   <div class="row">
     <div class="main">
-      <h2>Artists</h2>
-      <div class="artist-card-container" id="artist-container">
+      
+      <div class="flex-container"><h2>Artists</h2></div>
+      <div class="flex-container" id="artist-container">
        
 
       </div>
@@ -86,7 +80,7 @@
     });
   }
 };
-xhttp.open("GET", "/artists", true);
+xhttp.open("GET", "api/artists", true);
 xhttp.send();
 
 </script>
