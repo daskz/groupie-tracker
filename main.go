@@ -40,12 +40,16 @@ func main() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	id := strings.TrimPrefix(r.URL.Path, "/")
+	idUrl := strings.TrimPrefix(r.URL.Path, "/")
 
 	var fileName = "index.html"
-	if id != "" {
+	_, err := strconv.Atoi(idUrl)
+	log.Println(idUrl)
+	if err == nil {
 		fileName = "artist.html"
+		//json.NewEncoder(w).Encode(filterRelationByID(relation.Index, id))
 	}
+
 	t, _ := template.ParseFiles(fileName)
 
 	t.Execute(w, nil)
@@ -72,7 +76,14 @@ func concertsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err.Error())
 		}
 		//1og.Println(relation)
-		json.NewEncoder(w).Encode(relation.Index)
+
+		idUrl := strings.TrimPrefix(r.URL.Path, "/api/concerts/")
+		id, err := strconv.Atoi(idUrl)
+		log.Println(idUrl)
+		if idUrl != "" && err == nil {
+			// log.Fatal(err.Error())
+			json.NewEncoder(w).Encode(filterRelationByID(relation.Index, id))
+		}
 	}
 }
 
