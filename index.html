@@ -2,11 +2,11 @@
 <html>
 
 <head>
-  <title>Page Title</title>
+  <title>Groupie Tracker</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="css/style.css">
-  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet"> 
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -19,10 +19,22 @@
   <!-- The flexible grid (content) -->
   <div class="row">
     <div class="main">
-      
-      <div class="flex-container"><h2>Artists</h2></div>
+
+      <h2 class="page-heading">Artists</h2>
       <div class="flex-container" id="artist-container">
-       
+
+        {{ range .}}
+        <div class="artist-card">
+          <a href="/artists?ID={{.ID}}">
+            <div class="artist-image"
+              style="background-image: url(&quot;{{.Image}}&quot;);">
+            </div>
+            <div class="artist-info">
+              <span class="artist-title">{{.Name}}</span><br>
+              <span class="artist-year">{{.CreationDate}}</span>
+            </div>
+          </a></div>
+          {{end}}
 
       </div>
     </div>
@@ -34,54 +46,4 @@
   </div>
 
 </body>
-
-<script>
- 
-  var xhttp = new XMLHttpRequest(); 
-  xhttp.onreadystatechange = function() {
-    
-  if (this.readyState == 4 && this.status == 200) {
-    var container = document.getElementById("artist-container");
-    var obj = JSON.parse(this.responseText); 
-    obj.forEach(artist => {
-      var div = document.createElement("div")
-      div.className = "artist-card"
-
-      var artistLink = document.createElement("a")
-      artistLink.href = "/" + artist.ID 
-
-
-      var image = document.createElement("div")
-      image.className = "artist-image"
-      image.style = "background-image: url("+ artist.Image + ");"
-      artistLink.appendChild(image)
-
-      var artistInfo = document.createElement("div")
-      artistInfo.className = "artist-info"
-      
-      var artistTitle = document.createElement("span")
-      artistTitle.className = "artist-title"
-      artistTitle.innerText = artist.Name
-      
-      var br = document.createElement("br")
-
-      var artistYear = document.createElement("span")
-      artistYear.className = "artist-year"
-      artistYear.innerText = artist.CreationDate
-
-      artistInfo.appendChild(artistTitle)
-      artistInfo.appendChild(br)
-      artistInfo.appendChild(artistYear)
-
-      artistLink.appendChild(artistInfo)
-
-      div.appendChild(artistLink)
-      container.appendChild(div)
-    });
-  }
-};
-xhttp.open("GET", "api/artists", true);
-xhttp.send();
-
-</script>
 </html>

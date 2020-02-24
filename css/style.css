@@ -53,7 +53,7 @@
   /* Fake image, just for this example */
   .artist-image {
     background-color: #1abc9c;
-    background-image: url("https://groupietrackers.herokuapp.com/api/images/queen.jpeg");
+    background-image: url("");
     background-position: center;
     width: 100%;
     padding: 20px;
@@ -103,12 +103,16 @@
     background: #1abc9c;
   }
 
+  .page-heading {
+    text-align: center;
+  }
+  
   .artist-page-style {
     line-height: 1.7em;
   }
 
   .artist-page-card {
-    margin: 10px 10px;
+    margin: 10px 20px;
   }
 
   .artist-page-info {
@@ -121,6 +125,10 @@
 
   .artist-page-list {
    margin-top: auto; 
+  }
+
+  .artist-page-concert {
+    text-align: center;
   }
 
   /* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */

@@ -2,11 +2,11 @@
 <html>
 
 <head>
-  <title>Artist Page</title>
+  <title>Artist Page - {{.Artist.Name}}</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="css/style.css">
-  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet"> 
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -19,32 +19,44 @@
   <!-- The flexible grid (content) -->
   <div class="row">
     <div class="main">
-      <h4 onclick="goToMain()" style="cursor: pointer;"> ← Back to main</h4>
-      <h2 id="artist-name" style="text-align: center;">Queen</h2>
-      
+      <h4 id="goback-link" style="cursor: pointer;"> ← Back to main</h4>
+      <h2 class="page-heading">{{.Artist.Name}}</h2>
+
       <div class="flex-container artist-page-style" id="artist-container">
-       
+
         <div class="artist-page-card">
-          <div class="artist-image" id="artist-image"></div>
-          </div>
-          <div class="artist-page-card">
-            <span class="artist-page-info">Creation Date: </span><span id="creation-date" class="artist-page-info-data">1970</span><br>
-            <span class="artist-page-info">First Album: </span><span id="first-album" class="artist-page-info-data">11-25-1970 </span id="firstAlbum"><br>
-            <span class="artist-page-info">Members: </span>
-            <ul id="members" class="artist-page-list">
-            </ul>
-            </div>
-            
+          <div class="artist-image" id="artist-image" style="background-image: url('{{ .Artist.Image}} ');"></div>
+        </div>
+        <div class="artist-page-card">
+          <span class="artist-page-info">Creation Date: </span><span id="creation-date"
+            class="artist-page-info-data">{{.Artist.CreationDate}}</span><br>
+          <span class="artist-page-info">First Album: </span><span id="first-album"
+            class="artist-page-info-data">{{.Artist.FirstAlbum}}</span id="firstAlbum"><br>
+          <span class="artist-page-info">Members: </span>
+          <ul id="members" class="artist-page-list">
+            {{range .Artist.Members}} <li>{{ . }}</li> {{end}}
+          </ul>
+        </div>
+
       </div>
-      
+
       <hr style="opacity: 50%;">
-      
+
       <h2 style="text-align: center;">Latest Concerts</h2>
 
       <div class="flex-container artist-page-style">
-      <div id="concert-container" class="artist-page-card">
 
+        {{range $key, $value := .DatesLocations}}
+        <div class="artist-page-card">
+          <span class="artist-page-info"> {{ $key }} </span>
+          <div class="artist-page-concert">
+            {{range $value}} <span>{{ . }}</span><br> {{end}}
+          </div>
         </div>
+          {{else}} <span class="artist-page-info"> No Concerts </span>
+       
+        {{end}}
+
       </div>
     </div>
   </div>
@@ -57,75 +69,10 @@
 </body>
 
 <script>
- 
- function goToMain(){
-   document.location.href = '/'
- }
-
- function element(name){
-    return document.getElementById(name)
- }
-
-  var xhttp = new XMLHttpRequest(); 
-  xhttp.onreadystatechange = function() {
-    
-  if (this.readyState == 4 && this.status == 200) {
-    var container = document.getElementById("artist-container");
-    var artist = JSON.parse(this.responseText);
-    
-    element("artist-name").innerText = artist.Name
-    element("creation-date").innerText = artist.CreationDate
-    element("first-album").innerText = artist.FirstAlbum
-    element("artist-image").style = "background-image: url("+ artist.Image + ");"
-    var members = element("members")
-
-    artist.Members.forEach(element => {
-      var li = document.createElement("li")
-      li.innerText = element
-      members.appendChild(li)
-    });
+var link = document.getElementById("goback-link")
+link.onclick = function() {
+    document.location.href = '/'
   }
-};
-var id = location.href
-id = id.replace(location.origin, "")
-
-xhttp.open("GET", "api/artists"+id, true);
-xhttp.send();
-
-
-xhttp = new XMLHttpRequest(); 
-  xhttp.onreadystatechange = function() {
-    
-  if (this.readyState == 4 && this.status == 200) {
-    var container = element("concert-container")
-    var concerts = JSON.parse(this.responseText);
-
-    for (var key of Object.keys(concerts.DatesLocations)){
-      
-      var location = document.createElement("span")
-      location.className = "artist-page-info"
-      var locationName = key.replace("_", " ").replace("-", " - ").toUpperCase()
-      
-      location.innerText = locationName
-      
-      var list = document.createElement("ul")
-      list.className = "artist-page-list"
-
-      concerts.DatesLocations[key].forEach(date => {
-        var li = document.createElement("li")
-        li.innerText = date
-        list.appendChild(li)
-      });
-
-      container.appendChild(location)
-      container.appendChild(list)
-    }
-  }
-};
-
-xhttp.open("GET", "api/concerts"+id, true);
-xhttp.send();
-
-
 </script>
+
 </html>

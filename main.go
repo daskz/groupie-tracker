@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -28,10 +29,20 @@ type ArtistRelation struct {
 	DatesLocations map[string]interface{}
 }
 
+type ArtistData struct {
+	Artist         Artist
+	DatesLocations map[string]interface{}
+}
+
+var _artists = []Artist{}
+var _relation = &Relation{}
+
 func main() {
+	syncData("https://groupietrackers.herokuapp.com/api/artists", &_artists)
+	syncData("https://groupietrackers.herokuapp.com/api/relation", _relation)
+
 	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/api/artists/", artistsHandler)
-	http.HandleFunc("/api/concerts/", concertsHandler)
+	http.HandleFunc("/artists", artistIndexHandler)
 
 	fs := http.FileServer(http.Dir("css"))
 	http.Handle("/css/", http.StripPrefix("/css/", fs))
@@ -40,83 +51,75 @@ func main() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	idUrl := strings.TrimPrefix(r.URL.Path, "/")
-
-	var fileName = "index.html"
-	_, err := strconv.Atoi(idUrl)
-	log.Println(idUrl)
-	if err == nil {
-		fileName = "artist.html"
-		//json.NewEncoder(w).Encode(filterRelationByID(relation.Index, id))
+	t, err := template.ParseFiles("index.html")
+	if err != nil {
+		fmt.Println(err.Error())
 	}
-
-	t, _ := template.ParseFiles(fileName)
-
-	t.Execute(w, nil)
+	t.Execute(w, _artists)
 }
 
-func concertsHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("/api/concerts requested")
-	res, err := http.Get("https://groupietrackers.herokuapp.com/api/relation")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if res.StatusCode == http.StatusOK {
-		relation := Relation{}
-		bodyBytes, err := ioutil.ReadAll(res.Body)
-		//log.Println(string(bodyBytes))
-		res.Body.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = json.Unmarshal(bodyBytes, &relation)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		//1og.Println(relation)
-
-		idUrl := strings.TrimPrefix(r.URL.Path, "/api/concerts/")
-		id, err := strconv.Atoi(idUrl)
-		log.Println(idUrl)
-		if idUrl != "" && err == nil {
-			// log.Fatal(err.Error())
-			json.NewEncoder(w).Encode(filterRelationByID(relation.Index, id))
-		}
-	}
-}
-
-func artistsHandler(w http.ResponseWriter, r *http.Request) {
-	var artists []Artist
-	log.Println("/api/artists requested")
-	res, err := http.Get("https://groupietrackers.herokuapp.com/api/artists")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if res.StatusCode == http.StatusOK {
-		bodyBytes, err := ioutil.ReadAll(res.Body)
-		res.Body.Close()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = json.Unmarshal(bodyBytes, &artists)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-	}
-
-	idUrl := strings.TrimPrefix(r.URL.Path, "/api/artists/")
-	id, err := strconv.Atoi(idUrl)
-	log.Println(idUrl)
-	if idUrl != "" && err == nil {
-		// log.Fatal(err.Error())
-		json.NewEncoder(w).Encode(filterArtistByID(artists, id))
+func artistIndexHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("Artist Index Requested")
+	keys, ok := r.URL.Query()["ID"]
+	log.Println(keys)
+	if !ok || len(keys) != 1 {
+		log.Println("Url Param 'key' is missing ")
 		return
 	}
-	json.NewEncoder(w).Encode(artists)
+	key := keys[0]
+	id, err := strconv.Atoi(key)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	var artist = filterArtistByID(_artists, id)
+
+	var data = ArtistData{Artist: *artist}
+	var dates = filterRelationByID(_relation.Index, id)
+	if dates != nil {
+		data.DatesLocations = make(map[string]interface{})
+		for key, value := range dates.DatesLocations {
+			var locationName = strings.ReplaceAll(key, "_", " ")
+			locationName = strings.ReplaceAll(locationName, "-", " - ")
+			locationName = strings.ToUpper(locationName)
+			data.DatesLocations[locationName] = value
+		}
+	}
+
+	if artist != nil {
+		t, err := template.ParseFiles("artist.html")
+		if err != nil {
+			log.Println(err.Error())
+			return
+		}
+
+		err = t.Execute(w, data)
+		if err != nil {
+			log.Println(err.Error())
+		}
+	}
+}
+
+func syncData(api string, data interface{}) {
+	log.Println("Started synchronization api " + api)
+	res, err := http.Get(api)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if res.StatusCode == http.StatusOK {
+		bodyBytes, err := ioutil.ReadAll(res.Body)
+		res.Body.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = json.Unmarshal(bodyBytes, &data)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+	}
+	log.Println("Completed synchronization api " + api)
 }
 
 func filterArtistByID(artists []Artist, id int) *Artist {
