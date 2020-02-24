@@ -1,1 +1,1 @@
-web: groupie-trackerher
+web: groupie-tracker
