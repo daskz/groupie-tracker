@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -15,7 +16,7 @@ func main() {
 	fs := http.FileServer(http.Dir("css"))
 	http.Handle("/css/", http.StripPrefix("/css/", fs))
 
-	log.Fatal(http.ListenAndServe(":5000", nil))
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), nil))
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
