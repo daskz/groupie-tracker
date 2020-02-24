@@ -16,19 +16,22 @@ func syncData(api string, data interface{}) {
 	log.Println("Started synchronization api " + api)
 	res, err := http.Get(api)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err.Error())
+		return
 	}
 
 	if res.StatusCode == http.StatusOK {
 		bodyBytes, err := ioutil.ReadAll(res.Body)
 		res.Body.Close()
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err.Error())
+			return
 		}
 
 		err = json.Unmarshal(bodyBytes, &data)
 		if err != nil {
-			log.Fatal(err.Error())
+			log.Println(err.Error())
+			return
 		}
 	}
 	log.Println("Completed synchronization api " + api)

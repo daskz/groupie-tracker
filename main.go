@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	go syncData("https://groupietrackers.herokuapp.com/api/artists", _artists)
+	go syncData("https://groupietrackers.herokuapp.com/api/artists", &_artists)
 	go syncData("https://groupietrackers.herokuapp.com/api/relation", _relation)
 
 	http.HandleFunc("/", indexHandler)
