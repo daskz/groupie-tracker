@@ -16,7 +16,11 @@ func main() {
 	fs := http.FileServer(http.Dir("css"))
 	http.Handle("/css/", http.StripPrefix("/css/", fs))
 
-	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), nil))
+	var port = os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
