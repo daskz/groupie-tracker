@@ -1,1 +1,1 @@
-web: ./groupie-tracker
+web: ./main
