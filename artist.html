@@ -51,8 +51,8 @@
 
   <!-- Footer -->
   <div class="footer">
-    <h2>Footer</h2>
-  </div>	artists
+    <h2>Alem School, 2020</h2>
+  </div>
 
 </body>
 
@@ -104,8 +104,10 @@ xhttp = new XMLHttpRequest();
       
       var location = document.createElement("span")
       location.className = "artist-page-info"
-      location.innerText = key
-
+      var locationName = key.replace("_", " ").replace("-", " - ").toUpperCase()
+      
+      location.innerText = locationName
+      
       var list = document.createElement("ul")
       list.className = "artist-page-list"
 
