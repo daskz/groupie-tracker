@@ -6,12 +6,13 @@
   body {
     font-family: Roboto;
     margin: 0;
-    color: white
+    color: white;
+    background-color: #333;
   }
 
   /* Header/logo Title */
   .header {
-    padding: 60px;
+    padding: 40px;
     text-align: center;
     background: #1abc9c;
     color: white;
@@ -46,7 +47,6 @@
   /* Main column */
   .main {
     flex: 70%;
-    background-color: #333;
     padding: 20px;
   }
 
@@ -98,6 +98,7 @@
 
   /* Footer */
   .footer {
+    margin-top: 70px;
     padding: 20px;
     text-align: center;
     background: #1abc9c;
